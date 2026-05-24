@@ -114,6 +114,19 @@ export async function saveSkillToFirestore(skill: SkillCardType) {
 }
 
 /**
+ * Deletes a skill permanently from Firestore.
+ */
+export async function deleteSkillFromFirestore(cardId: string) {
+  try {
+    const docRef = doc(db, "skills", cardId);
+    await deleteDoc(docRef);
+  } catch (err) {
+    console.error("Error deleting skill card from Firestore:", err);
+    throw err;
+  }
+}
+
+/**
  * Appends a verified review comment to a skill document.
  */
 export async function addCommentToSkill(cardId: string, updatedComments: Comment[], newAverageRating: number) {

@@ -37,6 +37,7 @@ import LoginView from "./components/LoginView";
 import { 
   subscribeToSkills, 
   saveSkillToFirestore, 
+  deleteSkillFromFirestore,
   addCommentToSkill, 
   subscribeToUserProfile, 
   saveUserProfileToFirestore,
@@ -186,6 +187,14 @@ export default function App() {
     "React Web Dev", "Figma Design templates", "Flipped syllabus model"
   ]);
 
+  const [isAdminPage, setIsAdminPage] = useState(false);
+
+  useEffect(() => {
+    if ((window as any).IS_ADMIN_HTML || window.location.pathname.endsWith("admin.html")) {
+      setIsAdminPage(true);
+    }
+  }, []);
+
   const [followedInstructors, setFollowedInstructors] = useState<string[]>([]);
 
   // 1. Listen to authentication transformations
@@ -302,6 +311,24 @@ export default function App() {
     }
   };
 
+  // Edit existing skill card in Firestore
+  const handleEditManualCard = async (updatedCard: SkillCardType) => {
+    try {
+      await saveSkillToFirestore(updatedCard);
+    } catch (err) {
+      console.error("Failed to update manual skill in real-time DB:", err);
+    }
+  };
+
+  // Delete existing skill card from Firestore
+  const handleDeleteManualCard = async (cardId: string) => {
+    try {
+      await deleteSkillFromFirestore(cardId);
+    } catch (err) {
+      console.error("Failed to delete manual skill from Firestore:", err);
+    }
+  };
+
   // AI Career match generator matching query fields
   const getAISmartSuggestion = () => {
     if (skills.length === 0) return INITIAL_SKILLS[0];
@@ -326,6 +353,24 @@ export default function App() {
   };
 
   const smartAiSkill = getAISmartSuggestion();
+
+  if (isAdminPage) {
+    return (
+      <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 p-6 flex items-center justify-center transition-colors duration-350">
+        <div className="w-full max-w-4xl bg-white dark:bg-neutral-900 rounded-3xl overflow-hidden shadow-2xl">
+          <AdminPanel 
+            skills={skills}
+            onAddCard={handleAddManualCard}
+            onEditCard={handleEditManualCard}
+            onDeleteCard={handleDeleteManualCard}
+            onClose={() => {
+              window.location.href = "/";
+            }}
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 font-sans transition-colors duration-350">
@@ -404,6 +449,19 @@ export default function App() {
                     <span>Dark Theme</span>
                   </button>
                 </div>
+              </div>
+
+              <div className="space-y-2 pt-2.5 border-t border-neutral-100 dark:border-neutral-800">
+                <span className="text-xs font-bold text-neutral-400 uppercase tracking-wider block">Administrative Panel</span>
+                <button
+                  onClick={() => {
+                    window.location.href = "/admin.html";
+                  }}
+                  className="w-full py-2.5 px-4 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-800 hover:bg-neutral-100 dark:hover:bg-neutral-700 hover:text-emerald-500 font-bold text-xs text-neutral-700 dark:text-neutral-300 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <Settings className="w-4 h-4 text-emerald-500" />
+                  <span>Open Standalone Admin Portal</span>
+                </button>
               </div>
 
               <div className="p-3 bg-neutral-50 dark:bg-neutral-800/40 border border-neutral-150 dark:border-neutral-800 rounded-xl space-y-1">
@@ -695,15 +753,11 @@ export default function App() {
           <div className="flex gap-4 justify-center items-center">
             <button 
               onClick={() => {
-                // Instantly open the Admin 404 sandbox inside an expanded drawer
-                setActiveTab("home");
-                // Open simulated modal
-                const modal = document.getElementById("admin-overlay-container");
-                if (modal) modal.style.display = "block";
+                window.location.href = "/admin.html";
               }}
               className="hover:underline hover:text-red-500 cursor-pointer text-[10px]"
             >
-              System diagnostic (Load Demo 404 page)
+              System diagnostic (Load Secure Admin Console)
             </button>
           </div>
         </footer>
@@ -718,11 +772,19 @@ export default function App() {
         <div className="flex min-h-screen items-center justify-center p-4">
           <div className="w-full max-w-2xl bg-white dark:bg-neutral-900 rounded-3xl overflow-hidden shadow-2xl">
             <AdminPanel 
+              skills={skills}
               onAddCard={(card) => {
                 handleAddManualCard(card);
-                // hide modal
                 const modal = document.getElementById("admin-overlay-container");
                 if (modal) modal.style.display = "none";
+              }}
+              onEditCard={(updatedCard) => {
+                handleEditManualCard(updatedCard);
+                const modal = document.getElementById("admin-overlay-container");
+                if (modal) modal.style.display = "none";
+              }}
+              onDeleteCard={(cardId) => {
+                handleDeleteManualCard(cardId);
               }}
               onClose={() => {
                 const modal = document.getElementById("admin-overlay-container");
