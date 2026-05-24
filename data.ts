@@ -19,21 +19,19 @@ export default function ChatView() {
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [openRouterKey, setOpenRouterKey] = useState("");
-  const [showKeyInput, setShowKeyInput] = useState(false);
 
   const endRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
-    const savedKey = localStorage.getItem("openrouter_api_key") || "";
-    setOpenRouterKey(savedKey);
+    
+    // 👇👇 INGA UNGA ACTUAL API KEY-AH PODUNGA 👇👇
+    const myApiKey = "Ysk-or-v1-9c0415128ff6ed2681094aca94f67287d76cad90bfdbdbe86e801d6d0db1f164"; 
+    
+    // API key automatic-ah save aagi state-kum poidum
+    localStorage.setItem("openrouter_api_key", myApiKey);
+    setOpenRouterKey(myApiKey);
   }, [messages]);
-
-  const handleSaveKey = (e: React.FormEvent) => {
-    e.preventDefault();
-    localStorage.setItem("openrouter_api_key", openRouterKey.trim());
-    setShowKeyInput(false);
-  };
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -96,48 +94,7 @@ export default function ChatView() {
             </span>
           </div>
         </div>
-
-        {/* API Key settings for premium OpenRouter support */}
-        <button
-          onClick={() => setShowKeyInput(!showKeyInput)}
-          className={`p-2 rounded-xl border border-neutral-200 dark:border-neutral-800 text-neutral-500 hover:text-emerald-500 transition-colors ${showKeyInput ? "bg-emerald-50/50 dark:bg-emerald-950/20 text-emerald-500 border-emerald-200" : ""}`}
-          title="Configure API key"
-          id="toggle-apikeys-btn"
-        >
-          <Key className="w-4 h-4" />
-        </button>
       </div>
-
-      {/* Dynamic secret OpenRouter configuration */}
-      {showKeyInput && (
-        <form onSubmit={handleSaveKey} className="p-4 bg-emerald-500/5 dark:bg-emerald-500/10 border-b border-emerald-500/10 animate-fadeIn text-xs space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="font-bold text-[11px] text-neutral-800 dark:text-neutral-200 flex items-center gap-1">
-              🔑 Configure OpenRouter API Key
-            </span>
-            <span className="text-[10px] text-neutral-400">For real-time generation</span>
-          </div>
-          
-          <div className="flex gap-2">
-            <input
-              type="password"
-              placeholder="Paste openrouter free api key here..."
-              value={openRouterKey}
-              onChange={(e) => setOpenRouterKey(e.target.value)}
-              className="flex-1 px-3 py-1.5 rounded-lg border border-neutral-300 dark:border-neutral-705 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 focus:outline-hidden"
-            />
-            <button
-              type="submit"
-              className="px-4 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg font-bold"
-            >
-              Save Key
-            </button>
-          </div>
-          <p className="text-[10px] text-neutral-400">
-            If no key is configured, Alnitak AI operates under optimized diagnostic pathing. Securely stored locally.
-          </p>
-        </form>
-      )}
 
       {/* Messages Scroll Panel */}
       <div className="flex-1 overflow-y-auto p-5 space-y-4">
@@ -157,7 +114,6 @@ export default function ChatView() {
               <div className={`p-3.5 rounded-2xl text-[12.5px] leading-relaxed relative ${isUser ? "bg-neutral-900 text-white dark:bg-neutral-800" : "bg-neutral-55 dark:bg-neutral-800/40 text-neutral-900 dark:text-neutral-100 border border-neutral-100 dark:border-neutral-800"}`}>
                 <div className="whitespace-pre-line font-light markdown-rendering">
                   {message.content.split("\n").map((line, i) => {
-                    // Primitive support for bullet highlights and list items
                     if (line.trim().startsWith("- **") || line.trim().startsWith("- ")) {
                       return <div key={i} className="pl-4 py-0.5 relative before:content-['•'] before:absolute before:left-1 before:text-emerald-500">{line.replace(/^- \*\*/g, "").replace(/^- /g, "")}</div>;
                     }
