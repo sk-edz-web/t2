@@ -1,0 +1,71 @@
+{
+  "entities": {
+    "Skill": {
+      "title": "Skill",
+      "description": "A specific learning curriculum or path containing verified platforms and reviews",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "category": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "avgLearningTime": { "type": "string" },
+        "vacancyPercentage": { "type": "integer" },
+        "isAiGenerated": { "type": "boolean" },
+        "description": { "type": "string" },
+        "roadmapSteps": { "type": "array" },
+        "whereToLearn": { "type": "array" },
+        "vacanciesList": { "type": "array" },
+        "rating": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "title", "category", "imageUrl", "description"]
+    },
+    "Review": {
+      "title": "Review",
+      "description": "A student verification review submitted for a learning path",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userName": { "type": "string" },
+        "userAvatar": { "type": "string" },
+        "text": { "type": "string" },
+        "rating": { "type": "integer" },
+        "timestamp": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userName", "text", "rating"]
+    },
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User account settings and professional biography information",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "name": { "type": "string" },
+        "username": { "type": "string" },
+        "bio": { "type": "string" },
+        "contact": { "type": "string" },
+        "hideContactPublic": { "type": "boolean" },
+        "followers": { "type": "array" },
+        "following": { "type": "array" },
+        "profileImage": { "type": "string" }
+      },
+      "required": ["uid", "name", "username"]
+    }
+  },
+  "firestore": {
+    "/skills/{skillId}": {
+      "schema": "Skill",
+      "description": "Collection of available learning pathways"
+    },
+    "/skills/{skillId}/reviews/{reviewId}": {
+      "schema": "Review",
+      "description": "Collection of student reviews nested under a skill"
+    },
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "Unified profile database for registered learners"
+    }
+  }
+}

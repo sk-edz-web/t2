@@ -1,0 +1,6 @@
+{
+  "name": "Get Ready With Us",
+  "description": "A high-fidelity skill-learning platform with interactive tutorials, search grounding, real-time reviews, and AI-driven skill maps powered by Alnitak AI.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
